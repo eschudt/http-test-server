@@ -39,7 +39,7 @@
 //!     .method(Method::POST)
 //!     .header("Content-Type", "application/json")
 //!     .header("Cache-Control", "no-cache")
-//!     .body("{ \"message\": \"this is a message\" }");
+//!     .body(String::from("{ \"message\": \"this is a message\" }"));
 //!
 //! // request: POST /some-endpoint/new
 //!
@@ -64,7 +64,7 @@
 //!     .header("Content-Type", "text/event-stream")
 //!     .header("Cache-Control", "no-cache")
 //!     .stream()
-//!     .body(": initial data");
+//!     .body(String::from(": initial data"));
 //!
 //! // ...
 //!
@@ -99,7 +99,7 @@
 //!     .status(Status::SeeOther)
 //!     .header("Location", "/new" );
 //!
-//! resource_target.body("Hi!");
+//! resource_target.body(String::from("Hi!"));
 //!
 //! // request: GET /original
 //!
@@ -170,7 +170,7 @@ impl TestServer {
 
         thread::spawn(move || {
             for stream in listener.incoming() {
-                let mut stream = stream.unwrap();
+                let stream = stream.unwrap();
 
                 let mut buffer = [0; 512];
                 stream.peek(&mut buffer).unwrap();
@@ -455,7 +455,7 @@ mod tests {
         let server = TestServer::new().unwrap();
         let resource = server.create_resource("/something-else");
 
-        resource.status(Status::OK).body("<some body>");
+        resource.status(Status::OK).body(String::from("<some body>"));
 
         let stream = make_request(server.port(), "/something-else");
 
@@ -471,7 +471,7 @@ mod tests {
         let server = TestServer::new().unwrap();
         let resource = server.create_resource("/something-else");
 
-        resource.method(Method::POST).status(Status::OK).body("<some body>");
+        resource.method(Method::POST).status(Status::OK).body(String::from("<some body>"));
 
         let stream = make_post_request(server.port(), "/something-else");
 
@@ -487,7 +487,7 @@ mod tests {
         let server = TestServer::new().unwrap();
         let resource = server.create_resource("/something-else");
 
-        resource.method(Method::POST).status(Status::OK).body("<some body>");
+        resource.method(Method::POST).status(Status::OK).body(String::from("<some body>"));
 
         let stream = make_request(server.port(), "/something-else");
 
@@ -503,7 +503,7 @@ mod tests {
         let server = TestServer::new().unwrap();
         let resource = server.create_resource("/something-else");
 
-        resource.status(Status::OK).body("<some body>");
+        resource.status(Status::OK).body(String::from("<some body>"));
 
         assert_eq!(resource.request_count(), 0);
 

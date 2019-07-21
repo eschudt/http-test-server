@@ -24,7 +24,7 @@ use ::Status;
 /// resource
 ///     .status(Status::PartialContent)
 ///     .method(Method::POST)
-///     .body("All good!");
+///     .body(String::from("All good!"));
 ///
 /// ```
 #[derive(Debug)]
@@ -32,7 +32,7 @@ pub struct Resource {
     status_code: Arc<Mutex<Status>>,
     custom_status_code: Arc<Mutex<Option<String>>>,
     headers: Arc<Mutex<HashMap<String, String>>>,
-    body: Arc<Mutex<&'static str>>,
+    body: Arc<Mutex<String>>,
     method: Arc<Mutex<Method>>,
     delay: Arc<Mutex<Option<Duration>>>,
     request_count: Arc<Mutex<u32>>,
@@ -46,7 +46,7 @@ impl Resource {
             status_code: Arc::new(Mutex::new(Status::OK)),
             custom_status_code: Arc::new(Mutex::new(None)),
             headers: Arc::new(Mutex::new(HashMap::new())),
-            body: Arc::new(Mutex::new("")),
+            body: Arc::new(Mutex::new(String::from(""))),
             method: Arc::new(Mutex::new(Method::GET)),
             delay: Arc::new(Mutex::new(None)),
             request_count: Arc::new(Mutex::new(0)),
@@ -140,9 +140,9 @@ impl Resource {
     /// # use http_test_server::TestServer;
     /// # let server = TestServer::new().unwrap();
     /// # let resource = server.create_resource("/i-am-a-resource");
-    /// resource.body("this is important!");
+    /// resource.body(String::from("this is important!"));
     /// ```
-    pub fn body(&self, content: &'static str) -> &Resource {
+    pub fn body(&self, content: String) -> &Resource {
         if let Ok(mut body) = self.body.lock() {
             *body = content;
         }
@@ -405,7 +405,7 @@ mod tests {
     #[test]
     fn should_convert_to_response_with_body() {
         let resource_not_found = Resource::new();
-        resource_not_found.status(Status::Accepted).body("hello!");
+        resource_not_found.status(Status::Accepted).body(String::from("hello!"));
 
         assert_eq!(resource_not_found.to_response_string(), "HTTP/1.1 202 Accepted\r\n\r\nhello!");
     }
@@ -413,7 +413,7 @@ mod tests {
     #[test]
     fn should_allows_custom_status() {
         let resource_not_found = Resource::new();
-        resource_not_found.custom_status(666, "The Number Of The Beast").body("hello!");
+        resource_not_found.custom_status(666, "The Number Of The Beast").body(String::from("hello!"));
 
         assert_eq!(resource_not_found.to_response_string(), "HTTP/1.1 666 The Number Of The Beast\r\n\r\nhello!");
     }
@@ -421,7 +421,7 @@ mod tests {
     #[test]
     fn should_overwrite_custom_status_with_status() {
         let resource_not_found = Resource::new();
-        resource_not_found.custom_status(666, "The Number Of The Beast").status(Status::Forbidden).body("hello!");
+        resource_not_found.custom_status(666, "The Number Of The Beast").status(Status::Forbidden).body(String::from("hello!"));
 
         assert_eq!(resource_not_found.to_response_string(), "HTTP/1.1 403 Forbidden\r\n\r\nhello!");
     }
@@ -431,7 +431,7 @@ mod tests {
         let resource_not_found = Resource::new();
         resource_not_found
             .header("Content-Type", "application/json")
-            .body("hello!");
+            .body(String::from("hello!"));
 
         assert_eq!(resource_not_found.to_response_string(), "HTTP/1.1 200 Ok\r\nContent-Type: application/json\r\n\r\nhello!");
     }
@@ -442,7 +442,7 @@ mod tests {
         resource_not_found
             .header("Content-Type", "application/json")
             .header("Connection", "Keep-Alive")
-            .body("hello!");
+            .body(String::from("hello!"));
 
         let response = resource_not_found.to_response_string();
 
@@ -453,7 +453,7 @@ mod tests {
     #[test]
     fn should_increment_request_count() {
         let resource = Resource::new();
-        resource.body("hello!");
+        resource.body(String::from("hello!"));
 
         resource.increment_request_count();
         resource.increment_request_count();

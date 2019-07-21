@@ -36,7 +36,7 @@ fn test_post_request() {
         .method(Method::POST)
         .status(Status::Created)
         .header("Content-Type", "text")
-        .body("Everything is fine!");
+        .body(String::from("Everything is fine!"));
 
     let response = request(server.port(), "/create", "POST");
 
@@ -51,7 +51,7 @@ fn test_stream() {
     resource
         .stream()
         .header("Content-Type", "text/event-stream")
-        .body(": initial data\n");
+        .body(String::from(": initial data\n"));
 
     let resource_clone = resource.clone();
     thread::spawn(move || {
