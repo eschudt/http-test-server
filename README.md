@@ -40,7 +40,7 @@ resource
     .method(Method::POST)
     .header("Content-Type", "application/json")
     .header("Cache-Control", "no-cache")
-    .body("{ \"message\": \"this is a message\" }");
+    .body(String::from("{ \"message\": \"this is a message\" }"));
 
 // request: POST /some-endpoint/new
 
@@ -60,14 +60,14 @@ resource
     .header("Content-Type", "text/event-stream")
     .header("Cache-Control", "no-cache")
     .stream()
-    .body(": initial data");
+    .body(String::from(": initial data"));
 
 // ...
 
 resource
-    .send("some data")
-    .send(" some extra data\n")
-    .send_line("some extra data with line break")
+    .send(String::from("some data"))
+    .send(String::from(" some extra data\n"))
+    .send_line(String::from("some extra data with line break"))
     .close_open_connections();
 
 // request: GET /sub
@@ -91,7 +91,7 @@ resource_redirect
     .status(Status::SeeOther)
     .header("Location", "/new" );
 
-resource_target.body("Hi!");
+resource_target.body(String::from("Hi!"));
 
 // request: GET /original
 
